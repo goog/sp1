@@ -6,7 +6,7 @@ DB 0xeb,0x4e,0x90
 DB "HELLOIPL"
 DW 512
 DB 1
-DW 1 ; FROM FIRST D
+DW 1
 db 2
 dw 224
 dw 2880
@@ -14,12 +14,12 @@ db 0xf0
 dw 9
 dw 18
 dw 2
-dd 0 ;不使用分区
+dd 0
 dd 2880
 db 0,0,0x29
 dd 0xffffffff
-db "HELLO-OS"
-db "FAT12"
+db "HELLO-OS   "
+db "FAT12   "   ; must 8 bytes
 RESB 18
 
 ; main
@@ -33,8 +33,7 @@ db 0x0a,0x0a
 db "hello,world"
 db 0x0a
 db 0
-distance: equ $-start
-RESB 0x1fe-distance
+RESB 0x1fe-$
 db 0x55,0xaa    ;511-512 bytes ,last two bytes of one 扇区
 
 db 0xf0,0xff,0xff,0x00,0x00,0x00,0x00,0x00

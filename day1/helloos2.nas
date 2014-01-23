@@ -3,7 +3,7 @@
 
 ; Belows are the assembly codes for standard FAT12 floppy disk
 
-start:	DB		0xeb, 0x4e, 0x90; OEM number
+start:		DB		0xeb, 0x4e, 0x90; OEM number
 		DB		"HELLOIPL"		; Name of the boot sector (8 bytes)
 		DW		512				; Each sector size (must be 512 bytes)
 		DB		1				; Cluster minimum size like linux's inode (must be 1 sector)
@@ -40,7 +40,7 @@ start:	DB		0xeb, 0x4e, 0x90; OEM number
 		DB		0x0a			; Return
 		DB		0
 len:	EQU		$-start			; Calculate length so far
-		RESB 	0x1fe-len		; Reserve until 0x001fe (510 bytes)
+		RESB 	0x1fe-len		; Reserve until 0x001fe (510 bytes),1fe is empty
 		DB		0x55, 0xaa		; Must as such, so that booting can continue
 	
 ; Besides Booting

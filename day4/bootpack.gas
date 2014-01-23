@@ -1,0 +1,224 @@
+	.file	"bootpack.c"
+	.text
+	.balign 2
+.globl _HariMain
+	.def	_HariMain;	.scl	2;	.type	32;	.endef
+_HariMain:
+	pushl	%ebp
+	movl	%esp, %ebp
+	subl	$8, %esp
+	call	_init_palette
+	movl	$655360, -4(%ebp)
+	subl	$4, %esp
+	pushl	$120
+	pushl	$120
+	pushl	$20
+	pushl	$20
+	pushl	$1
+	pushl	$320
+	pushl	-4(%ebp)
+	call	_boxfill8
+	addl	$32, %esp
+	subl	$4, %esp
+	pushl	$150
+	pushl	$170
+	pushl	$50
+	pushl	$70
+	pushl	$2
+	pushl	$320
+	pushl	-4(%ebp)
+	call	_boxfill8
+	addl	$32, %esp
+	subl	$4, %esp
+	pushl	$180
+	pushl	$220
+	pushl	$80
+	pushl	$120
+	pushl	$4
+	pushl	$320
+	pushl	-4(%ebp)
+	call	_boxfill8
+	addl	$32, %esp
+L2:
+	call	_io_hlt
+	jmp	L2
+	.data
+_table_rgb.0:
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	-1
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	-1
+	.byte	0
+	.byte	-1
+	.byte	-1
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	-1
+	.byte	-1
+	.byte	0
+	.byte	-1
+	.byte	0
+	.byte	-1
+	.byte	-1
+	.byte	-1
+	.byte	-1
+	.byte	-1
+	.byte	-58
+	.byte	-58
+	.byte	-58
+	.byte	-124
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	-124
+	.byte	0
+	.byte	-124
+	.byte	-124
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	-124
+	.byte	-124
+	.byte	0
+	.byte	-124
+	.byte	0
+	.byte	-124
+	.byte	-124
+	.byte	-124
+	.byte	-124
+	.byte	-124
+	.text
+	.balign 2
+.globl _init_palette
+	.def	_init_palette;	.scl	2;	.type	32;	.endef
+_init_palette:
+	pushl	%ebp
+	movl	%esp, %ebp
+	subl	$8, %esp
+	subl	$4, %esp
+	pushl	$_table_rgb.0
+	pushl	$15
+	pushl	$0
+	call	_set_palette
+	addl	$16, %esp
+	leave
+	ret
+	.balign 2
+.globl _set_palette
+	.def	_set_palette;	.scl	2;	.type	32;	.endef
+_set_palette:
+	pushl	%ebp
+	movl	%esp, %ebp
+	subl	$8, %esp
+	call	_io_load_eflags
+	movl	%eax, -8(%ebp)
+	call	_io_cli
+	subl	$8, %esp
+	pushl	8(%ebp)
+	pushl	$968
+	call	_io_out8
+	addl	$16, %esp
+	movl	8(%ebp), %eax
+	movl	%eax, -4(%ebp)
+L7:
+	movl	-4(%ebp), %eax
+	cmpl	12(%ebp), %eax
+	jle	L10
+	jmp	L8
+L10:
+	subl	$8, %esp
+	movl	16(%ebp), %eax
+	movb	(%eax), %al
+	shrb	$2, %al
+	andl	$255, %eax
+	pushl	%eax
+	pushl	$969
+	call	_io_out8
+	addl	$16, %esp
+	subl	$8, %esp
+	movl	16(%ebp), %eax
+	incl	%eax
+	movb	(%eax), %al
+	shrb	$2, %al
+	andl	$255, %eax
+	pushl	%eax
+	pushl	$969
+	call	_io_out8
+	addl	$16, %esp
+	subl	$8, %esp
+	movl	16(%ebp), %eax
+	addl	$2, %eax
+	movb	(%eax), %al
+	shrb	$2, %al
+	andl	$255, %eax
+	pushl	%eax
+	pushl	$969
+	call	_io_out8
+	addl	$16, %esp
+	leal	16(%ebp), %eax
+	addl	$3, (%eax)
+	leal	-4(%ebp), %eax
+	incl	(%eax)
+	jmp	L7
+L8:
+	subl	$12, %esp
+	pushl	-8(%ebp)
+	call	_io_store_eflags
+	addl	$16, %esp
+	leave
+	ret
+	.balign 2
+.globl _boxfill8
+	.def	_boxfill8;	.scl	2;	.type	32;	.endef
+_boxfill8:
+	pushl	%ebp
+	movl	%esp, %ebp
+	subl	$12, %esp
+	movl	16(%ebp), %eax
+	movb	%al, -1(%ebp)
+	movl	24(%ebp), %eax
+	movl	%eax, -12(%ebp)
+L12:
+	movl	-12(%ebp), %eax
+	cmpl	32(%ebp), %eax
+	jle	L15
+	jmp	L11
+L15:
+	movl	20(%ebp), %eax
+	movl	%eax, -8(%ebp)
+L16:
+	movl	-8(%ebp), %eax
+	cmpl	28(%ebp), %eax
+	jle	L19
+	jmp	L14
+L19:
+	movl	-12(%ebp), %eax
+	imull	12(%ebp), %eax
+	addl	-8(%ebp), %eax
+	movl	%eax, %edx
+	addl	8(%ebp), %edx
+	movb	-1(%ebp), %al
+	movb	%al, (%edx)
+	leal	-8(%ebp), %eax
+	incl	(%eax)
+	jmp	L16
+L14:
+	leal	-12(%ebp), %eax
+	incl	(%eax)
+	jmp	L12
+L11:
+	leave
+	ret
+	.def	_io_store_eflags;	.scl	2;	.type	32;	.endef
+	.def	_io_out8;	.scl	2;	.type	32;	.endef
+	.def	_io_cli;	.scl	2;	.type	32;	.endef
+	.def	_io_load_eflags;	.scl	2;	.type	32;	.endef
+	.def	_set_palette;	.scl	2;	.type	32;	.endef
+	.def	_io_hlt;	.scl	2;	.type	32;	.endef
+	.def	_boxfill8;	.scl	2;	.type	32;	.endef
+	.def	_init_palette;	.scl	2;	.type	32;	.endef
