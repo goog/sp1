@@ -6,36 +6,226 @@
 _HariMain:
 	pushl	%ebp
 	movl	%esp, %ebp
-	subl	$8, %esp
+	subl	$24, %esp
 	call	_init_palette
 	movl	$655360, -4(%ebp)
+	movl	$320, -8(%ebp)
+	movl	$200, -12(%ebp)
 	subl	$4, %esp
-	pushl	$120
-	pushl	$120
-	pushl	$20
-	pushl	$20
-	pushl	$1
-	pushl	$320
+	movl	-12(%ebp), %eax
+	decl	%eax
+	pushl	%eax
+	movl	-8(%ebp), %eax
+	decl	%eax
+	pushl	%eax
+	pushl	$0
+	pushl	$0
+	pushl	$14
+	pushl	-8(%ebp)
 	pushl	-4(%ebp)
 	call	_boxfill8
 	addl	$32, %esp
 	subl	$4, %esp
-	pushl	$150
-	pushl	$170
-	pushl	$50
-	pushl	$70
+	movl	-12(%ebp), %eax
+	subl	$28, %eax
+	pushl	%eax
+	movl	-8(%ebp), %eax
+	decl	%eax
+	pushl	%eax
+	movl	-12(%ebp), %eax
+	subl	$28, %eax
+	pushl	%eax
+	pushl	$0
+	pushl	$8
+	pushl	-8(%ebp)
+	pushl	-4(%ebp)
+	call	_boxfill8
+	addl	$32, %esp
+	subl	$4, %esp
+	movl	-12(%ebp), %eax
+	subl	$27, %eax
+	pushl	%eax
+	movl	-8(%ebp), %eax
+	decl	%eax
+	pushl	%eax
+	movl	-12(%ebp), %eax
+	subl	$27, %eax
+	pushl	%eax
+	pushl	$0
+	pushl	$7
+	pushl	-8(%ebp)
+	pushl	-4(%ebp)
+	call	_boxfill8
+	addl	$32, %esp
+	subl	$4, %esp
+	movl	-12(%ebp), %eax
+	subl	$26, %eax
+	pushl	%eax
+	movl	-8(%ebp), %eax
+	decl	%eax
+	pushl	%eax
+	movl	-12(%ebp), %eax
+	subl	$26, %eax
+	pushl	%eax
+	pushl	$0
+	pushl	$8
+	pushl	-8(%ebp)
+	pushl	-4(%ebp)
+	call	_boxfill8
+	addl	$32, %esp
+	subl	$4, %esp
+	movl	-12(%ebp), %eax
+	subl	$24, %eax
+	pushl	%eax
+	pushl	$59
+	movl	-12(%ebp), %eax
+	subl	$24, %eax
+	pushl	%eax
+	pushl	$3
+	pushl	$7
+	pushl	-8(%ebp)
+	pushl	-4(%ebp)
+	call	_boxfill8
+	addl	$32, %esp
+	subl	$4, %esp
+	movl	-12(%ebp), %eax
+	subl	$4, %eax
+	pushl	%eax
 	pushl	$2
-	pushl	$320
+	movl	-12(%ebp), %eax
+	subl	$24, %eax
+	pushl	%eax
+	pushl	$2
+	pushl	$7
+	pushl	-8(%ebp)
 	pushl	-4(%ebp)
 	call	_boxfill8
 	addl	$32, %esp
 	subl	$4, %esp
-	pushl	$180
-	pushl	$220
-	pushl	$80
-	pushl	$120
-	pushl	$4
-	pushl	$320
+	movl	-12(%ebp), %eax
+	subl	$4, %eax
+	pushl	%eax
+	pushl	$59
+	movl	-12(%ebp), %eax
+	subl	$4, %eax
+	pushl	%eax
+	pushl	$3
+	pushl	$15
+	pushl	-8(%ebp)
+	pushl	-4(%ebp)
+	call	_boxfill8
+	addl	$32, %esp
+	subl	$4, %esp
+	movl	-12(%ebp), %eax
+	subl	$5, %eax
+	pushl	%eax
+	pushl	$59
+	movl	-12(%ebp), %eax
+	subl	$23, %eax
+	pushl	%eax
+	pushl	$59
+	pushl	$15
+	pushl	-8(%ebp)
+	pushl	-4(%ebp)
+	call	_boxfill8
+	addl	$32, %esp
+	subl	$4, %esp
+	movl	-12(%ebp), %eax
+	subl	$3, %eax
+	pushl	%eax
+	pushl	$59
+	movl	-12(%ebp), %eax
+	subl	$3, %eax
+	pushl	%eax
+	pushl	$2
+	pushl	$0
+	pushl	-8(%ebp)
+	pushl	-4(%ebp)
+	call	_boxfill8
+	addl	$32, %esp
+	subl	$4, %esp
+	movl	-12(%ebp), %eax
+	subl	$3, %eax
+	pushl	%eax
+	pushl	$60
+	movl	-12(%ebp), %eax
+	subl	$24, %eax
+	pushl	%eax
+	pushl	$60
+	pushl	$0
+	pushl	-8(%ebp)
+	pushl	-4(%ebp)
+	call	_boxfill8
+	addl	$32, %esp
+	subl	$4, %esp
+	movl	-12(%ebp), %eax
+	subl	$24, %eax
+	pushl	%eax
+	movl	-8(%ebp), %eax
+	subl	$4, %eax
+	pushl	%eax
+	movl	-12(%ebp), %eax
+	subl	$24, %eax
+	pushl	%eax
+	movl	-8(%ebp), %eax
+	subl	$47, %eax
+	pushl	%eax
+	pushl	$15
+	pushl	-8(%ebp)
+	pushl	-4(%ebp)
+	call	_boxfill8
+	addl	$32, %esp
+	subl	$4, %esp
+	movl	-12(%ebp), %eax
+	subl	$4, %eax
+	pushl	%eax
+	movl	-8(%ebp), %eax
+	subl	$47, %eax
+	pushl	%eax
+	movl	-12(%ebp), %eax
+	subl	$23, %eax
+	pushl	%eax
+	movl	-8(%ebp), %eax
+	subl	$47, %eax
+	pushl	%eax
+	pushl	$15
+	pushl	-8(%ebp)
+	pushl	-4(%ebp)
+	call	_boxfill8
+	addl	$32, %esp
+	subl	$4, %esp
+	movl	-12(%ebp), %eax
+	subl	$3, %eax
+	pushl	%eax
+	movl	-8(%ebp), %eax
+	subl	$4, %eax
+	pushl	%eax
+	movl	-12(%ebp), %eax
+	subl	$3, %eax
+	pushl	%eax
+	movl	-8(%ebp), %eax
+	subl	$47, %eax
+	pushl	%eax
+	pushl	$7
+	pushl	-8(%ebp)
+	pushl	-4(%ebp)
+	call	_boxfill8
+	addl	$32, %esp
+	subl	$4, %esp
+	movl	-12(%ebp), %eax
+	subl	$3, %eax
+	pushl	%eax
+	movl	-8(%ebp), %eax
+	subl	$3, %eax
+	pushl	%eax
+	movl	-12(%ebp), %eax
+	subl	$24, %eax
+	pushl	%eax
+	movl	-8(%ebp), %eax
+	subl	$3, %eax
+	pushl	%eax
+	pushl	$7
+	pushl	-8(%ebp)
 	pushl	-4(%ebp)
 	call	_boxfill8
 	addl	$32, %esp
