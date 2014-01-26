@@ -17,6 +17,7 @@ void HariMain(void)
 	char s[40];
 	init_gdtidt();
 	init_pic();
+	io_sti();
 	init_palette();
 	binfo = (struct BOOTINFO *)  0x0ff0;
 	xsize = binfo->scrnx;
@@ -38,9 +39,12 @@ void HariMain(void)
 	int mx, my;
 	mx = (binfo->scrnx - 16) / 2;
 	my = (binfo->scrny - 28 - 16) / 2;
+	// mouse image 
 	init_mouse_cursor8(mcursor,COL8_008484);
 	putblock8_8(binfo->vram,binfo->scrnx,16,16,mx,my,mcursor,16);
-
+	
+	io_out8(PIC0_IMR, 0xf9); /* PIC1�ƃL�[�{�[�h������(11111001) */
+	io_out8(PIC1_IMR, 0xef); //11101111 , allow irq12 
 
 	for(;;)
 	io_hlt();  /* execute the _io_hlt assembly function*/

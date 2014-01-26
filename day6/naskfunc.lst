@@ -118,18 +118,17 @@
    118 00000090 CF                              	IRETD
    119 00000091                                 
    120 00000091                                 _asm_inthandler2c:
-   121 00000091 06                              		PUSH	ES
-   122 00000092 1E                              		PUSH	DS
-   123 00000093 60                              		PUSHAD
-   124 00000094 89 E0                           		MOV		EAX,ESP
-   125 00000096 50                              		PUSH	EAX
-   126 00000097 66 8C D0                        		MOV		AX,SS
-   127 0000009A 8E D8                           		MOV		DS,AX
-   128 0000009C 8E C0                           		MOV		ES,AX
-   129 0000009E E8 [00000000]                   		CALL	_inthandler2c
-   130 000000A3 58                              		POP		EAX
-   131 000000A4 61                              		POPAD
-   132 000000A5 1F                              		POP		DS
-   133 000000A6 07                              		POP		ES
-   134 000000A7 CF                              		IRETD
-   135 000000A8                                 
+   121 00000091 06                              	PUSH	ES
+   122 00000092 1E                              	PUSH	DS
+   123 00000093 60                              	PUSHAD
+   124 00000094 89 E0                           	MOV		EAX,ESP
+   125 00000096 50                              	PUSH	EAX
+   126 00000097 66 8C D0                        	MOV		AX,SS
+   127 0000009A 8E D8                           	MOV		DS,AX
+   128 0000009C 8E C0                           	MOV		ES,AX
+   129 0000009E E8 [00000000]                   	CALL	_inthandler2c
+   130 000000A3 58                              	POP		EAX
+   131 000000A4 61                              	POPAD
+   132 000000A5 1F                              	POP		DS
+   133 000000A6 07                              	POP		ES
+   134 000000A7 CF                              	IRETD

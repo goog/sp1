@@ -118,18 +118,17 @@ _asm_inthandler21:
 	IRETD
 
 _asm_inthandler2c:
-		PUSH	ES
-		PUSH	DS
-		PUSHAD
-		MOV		EAX,ESP
-		PUSH	EAX
-		MOV		AX,SS
-		MOV		DS,AX
-		MOV		ES,AX
-		CALL	_inthandler2c
-		POP		EAX
-		POPAD
-		POP		DS
-		POP		ES
-		IRETD
-
+	PUSH	ES
+	PUSH	DS
+	PUSHAD
+	MOV		EAX,ESP
+	PUSH	EAX
+	MOV		AX,SS
+	MOV		DS,AX
+	MOV		ES,AX
+	CALL	_inthandler2c
+	POP		EAX
+	POPAD
+	POP		DS
+	POP		ES
+	IRETD

@@ -83,9 +83,9 @@
     81 000000CC FF 35 00000FF8                  	PUSH	DWORD [4088]
     82 000000D2 E8 [00000000]                   	CALL	_putfonts8_asc
     83 000000D7 83 C4 34                        	ADD	ESP,52
-    84 000000DA                                 L6:
+    84 000000DA                                 L3:
     85 000000DA E8 [00000000]                   	CALL	_io_hlt
-    86 000000DF EB F9                           	JMP	L6
+    86 000000DF EB F9                           	JMP	L3
     87                                          [SECTION .data]
     88 0000001D                                 LC1:
     89 0000001D 49 4E 54 20 32 43 20 28 49 52   	DB	"INT 2C (IRQ-12) : PS/2 mouse",0x00
@@ -115,6 +115,6 @@
    111 00000118 FF 35 00000FF8                  	PUSH	DWORD [4088]
    112 0000011E E8 [00000000]                   	CALL	_putfonts8_asc
    113 00000123 83 C4 34                        	ADD	ESP,52
-   114 00000126                                 L8:
+   114 00000126                                 L7:
    115 00000126 E8 [00000000]                   	CALL	_io_hlt
-   116 0000012B EB F9                           	JMP	L8
+   116 0000012B EB F9                           	JMP	L7

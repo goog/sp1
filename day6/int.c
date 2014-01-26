@@ -27,7 +27,7 @@ void inthandler21(int * esp)
 	struct BOOTINFO *binfo = (struct BOOTINFO *)  ADR_BOOTINFO;
 	boxfill8(binfo->vram, binfo->scrnx, COL8_000000, 0,0, 32*8-1, 15);
 	putfonts8_asc(binfo->vram,binfo->scrnx,0,0,COL8_FFFFFF,"INT21(IRQ1) :/ps/2 keyboard ");
-	while(1)
+	for(;;)
 	{io_hlt();}
 }
 
