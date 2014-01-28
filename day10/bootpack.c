@@ -51,28 +51,24 @@ void HariMain(void)
 	
 	/* initlize the os background */
 	init_screen(buf_back,xsize,ysize);
-        // interaction input
-	//sprintf(s,"scrnx= %d",binfo->scrnx);
-	//putfonts8_asc(binfo->vram,binfo->scrnx,16,64,COL8_FFFFFF,s);
 	char keybuf[32],mousebuf[128];
 	int mx, my;
 	// mouse image
 	struct MOUSE_DEC mdec;
 	enable_mouse(&mdec); 
 	init_mouse_cursor8(buf_mouse,99);
-	sheet_slide(shtctl,sht_back,0,0);
-	//putblock8_8(binfo->vram,binfo->scrnx,16,16,mx,my,mcursor,16);
+	sheet_slide(shtctl,sht_back,0,0);// show background; 
 	
 	mx = (binfo->scrnx - 16) / 2;
 	my = (binfo->scrny - 28 - 16) / 2;
 	sheet_slide(shtctl,sht_mouse,mx,my);
-	sheet_updown(shtctl,sht_back,0);
-	sheet_updown(shtctl,sht_mouse,1);
+	sheet_updown(shtctl,sht_back,0); // height 0
+	sheet_updown(shtctl,sht_mouse,1); // height 1
 	sprintf(s,"%3d %3d",mx,my);
-	putfonts8_asc(binfo->vram, binfo->scrnx, 0, 132, COL8_FFFFFF, s);
+	putfonts8_asc(binfo->vram, binfo->scrnx, 0, 0, COL8_FFFFFF, s);
 	sprintf(s, "memory %dMB free %dkb", memtotal/(1024*1024), memman_total(memman)/1024);
-	putfonts8_asc(buf_back, binfo->scrnx, 0, 132, COL8_FFFFFF, s);
-	sheet_refresh(shtctl);
+	putfonts8_asc(buf_back, binfo->scrnx, 0, 32, COL8_FFFFFF, s);
+	sheet_refresh(shtctl,sht_back,0,0,binfo->scrnx,48);
 
 	io_out8(PIC0_IMR, 0xf9); /* PIC1 (11111001) */
 	io_out8(PIC1_IMR, 0xef); //11101111 , allow irq12 
@@ -93,7 +89,7 @@ void HariMain(void)
 		sprintf(s, "%02X", i);
 		boxfill8(buf_back, binfo->scrnx, COL8_008484, 0, 16, 15, 31);
 		putfonts8_asc(buf_back, binfo->scrnx, 0, 16, COL8_FFFFFF, s);
-		sheet_refresh(shtctl);
+		sheet_refresh(shtctl,sht_back,0,16,16,32);
 
 		}
 		else if(fifo8_status(&mousefifo)!= 0)
@@ -108,7 +104,8 @@ void HariMain(void)
 		        if((mdec.btn & 0x04) != 0) s[2]='C';	
 			boxfill8(buf_back, binfo->scrnx, COL8_008484, 32, 16, 32+15*8-1, 31); // after filling,show ok
 			putfonts8_asc(buf_back, binfo->scrnx, 32, 16, COL8_FFFFFF, s);
-		 	// the move of mouse 
+		 	sheet_refresh(shtctl,sht_back,32,16,32+15*8,32);
+			// the move of mouse 
 			mx +=mdec.x;
 			my +=mdec.y;
 			if(mx <0) mx = 0;
@@ -118,6 +115,7 @@ void HariMain(void)
 		 	sprintf(s, "(%3d,%3d)", mx,my);
 			boxfill8(buf_back, binfo->scrnx, COL8_008484, 0, 0,79, 15);
 			putfonts8_asc(buf_back, binfo->scrnx, 0, 0, COL8_FFFFFF, s);
+			sheet_refresh(shtctl,sht_back,0,0,80,16);
 			sheet_slide(shtctl,sht_mouse,mx,my);
 		 
 		  }
