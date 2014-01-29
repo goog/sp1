@@ -12,15 +12,13 @@ void HariMain(void)
 	char *vram;
 	int xsize;
 	int ysize;
-	unsigned int memtotal;
+	unsigned int memtotal,count=0;
 	struct MEMMAN *memman = (struct MEMMAN *) MEMMAN_ADDR ;
 	struct BOOTINFO *binfo;
-	extern char hankaku[4096];
 	
 	struct SHTCTL *shtctl;
 	struct SHEET *sht_back, *sht_mouse, *sht_win;
 	unsigned char *buf_back, buf_mouse[256],*buf_win;
-
 
 	int i;
 	char s[40];
@@ -46,12 +44,11 @@ void HariMain(void)
 	sht_back  = sheet_alloc(shtctl);
 	sht_mouse = sheet_alloc(shtctl);
 	sht_win   = sheet_alloc(shtctl);
-	
 	buf_back  = (unsigned char *) memman_alloc_4k(memman, binfo->scrnx * binfo->scrny);
-	buf_win  = (unsigned char *) memman_alloc_4k(memman,160 * 68); // window buffer
+	buf_win  = (unsigned char *) memman_alloc_4k(memman,160 * 52); // window buffer
 	sheet_setbuf(sht_back, buf_back, binfo->scrnx, binfo->scrny, -1);
 	sheet_setbuf(sht_mouse, buf_mouse, 16, 16, 99);
-	sheet_setbuf(sht_win, buf_win,160,68,-1);
+	sheet_setbuf(sht_win, buf_win,160,52,-1);
 	/* initlize the os background */
 	init_screen(buf_back,xsize,ysize);
 	char keybuf[32],mousebuf[128];
@@ -60,9 +57,9 @@ void HariMain(void)
 	struct MOUSE_DEC mdec;
 	enable_mouse(&mdec); 
 	init_mouse_cursor8(buf_mouse,99);
-	make_window8(buf_win,160,68,"window");
-	putfonts8_asc(buf_win,160,24,28, COL8_000000,"welcome to");
-	putfonts8_asc(buf_win,160,24,44, COL8_FFFFFF, "here");
+	make_window8(buf_win,160,52,"counter");
+	//putfonts8_asc(buf_win,160,24,28, COL8_000000,"welcome to");
+	//putfonts8_asc(buf_win,160,24,44, COL8_FFFFFF, "here");
 
 	sheet_slide(sht_back,0,0);// show background; 
 	
@@ -87,9 +84,15 @@ void HariMain(void)
 	fifo8_init(&mousefifo,128,mousebuf);
 	for(;;)
 	{
+	count++;
+	sprintf(s,"%010d",count);
+	boxfill8(buf_win,160,COL8_C6C6C6,40,28,119,43);
+	putfonts8_asc(buf_win,160,40,28, COL8_000000,s);
+	sheet_refresh(sht_win,40,28,120,44); // fresh area
+	
 	io_cli(); // forbid all interrupts 
 	if(fifo8_status(&keyfifo) + fifo8_status(&mousefifo)== 0) 
-		io_stihlt();  // read data until it's empty
+		io_sti();  // read data until it's empty
 	else {
 		if(fifo8_status(&keyfifo))
 		{
