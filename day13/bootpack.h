@@ -98,30 +98,28 @@ void inthandler2c(int *esp);
 #define PIC1_ICW3		0x00a1
 #define PIC1_ICW4		0x00a1
 
-/* fifo.c */
-struct FIFO8{
-	unsigned char *buf;
+/* fifo.c 32bit */
+struct FIFO{
+	int *buf;
 	int p, q, size, free, flags;
 };
-void fifo8_init(struct FIFO8 *fifo, int size, unsigned char *buf);
-int fifo8_put(struct FIFO8 *fifo, unsigned char data);
-int fifo8_get(struct FIFO8 *fifo);
-int fifo8_status(struct FIFO8 *fifo);
+void fifo_init(struct FIFO *fifo, int size, int  *buf);
+int fifo_put(struct FIFO *fifo, int  data);
+int fifo_get(struct FIFO *fifo);
+int fifo_status(struct FIFO *fifo);
 
 
 /* keyboard.c */
 void wait_KBC_sendready(void);
-void init_keyboard(void);
+void init_keyboard(struct FIFO *fifo, int data);
 
 /*mouse.c */
 struct MOUSE_DEC{
 	unsigned char buf[3],phase;
 	int x,y,btn;
 };
-void enable_mouse(struct MOUSE_DEC * mdec);
+void enable_mouse(struct FIFO *fifo, int data0, struct MOUSE_DEC * mdec);
 int mouse_decode(struct MOUSE_DEC *mdec,unsigned char dat);
-
-
 
 // memory 
 #define MEMMAN_FREES  4090
@@ -173,20 +171,24 @@ void make_window8(unsigned char *buf, int xsize, int ysize, char *title);
 
 //timer.c
 #define MAX_TIMER  500
-
 struct TIMER{
+	struct TIMER *next;
 	unsigned int timeout,flag;
-	struct FIFO8 *fifo;
+	struct FIFO *fifo;
 	unsigned char data;
 };
 
 struct TIMERCTL{
-	unsigned int count;
-	struct TIMER timer[MAX_TIMER];
+	unsigned int count,next;
+	struct TIMER *t0;
+	struct TIMER timers0[MAX_TIMER];
 };
 extern struct TIMERCTL timerctl;
 void init_pit(void);
 void inthandler20(int *esp);
-void timer_set(struct TIMER * timer,unsigned int timeout,struct FIFO8 *fifo,unsigned char data);
+void timer_set(struct TIMER * timer,unsigned int timeout,struct FIFO *fifo,int  data);
 void timer_free(struct TIMER * timer);
+struct TIMER * timer_alloc(void);
 
+/* functions.c*/
+int bps(struct SHEET *sht, int x,int y, int b,int c, char *s, int len);
