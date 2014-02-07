@@ -1,24 +1,24 @@
 ; haribote-os boot asm
 ; TAB=4
-VBEMODE	EQU		0x105			; 1024 x  768 x 8bit
+[INSTRSET "i486p"]
+
+VBEMODE	EQU		0x105
 
 BOTPAK	EQU		0x00280000		; bootpackのロード先
 DSKCAC	EQU		0x00100000		; ディスクキャッシュの場所
 DSKCAC0	EQU		0x00008000		; ディスクキャッシュの場所（リアルモード）
 
-; BOOT_INFO関係
-CYLS	EQU		0x0ff0			; ブートセクタが設定する
+; BOOT_INFO memory address
+CYLS	EQU		0x0ff0
 LEDS	EQU		0x0ff1
-VMODE	EQU		0x0ff2			; 色数に関する情報。何ビットカラーか？
-SCRNX	EQU		0x0ff4			; 解像度のX
-SCRNY	EQU		0x0ff6			; 解像度のY
-VRAM	EQU		0x0ff8			; グラフィックバッファの開始番地
+VMODE	EQU		0x0ff2
+SCRNX	EQU		0x0ff4
+SCRNY	EQU		0x0ff6
+VRAM	EQU		0x0ff8
 
 		ORG		0xc200			; このプログラムがどこに読み込まれるのか
 
-; vga 
-
-; VBE存在確認
+; check vbe's exist 
 
 		MOV		AX,0x9000
 		MOV		ES,AX
@@ -28,13 +28,12 @@ VRAM	EQU		0x0ff8			; グラフィックバッファの開始番地
 		CMP		AX,0x004f
 		JNE		scrn320
 
-; VBEのバージョンチェック
-
+;check VBE version
 		MOV		AX,[ES:DI+4]
 		CMP		AX,0x0200
 		JB		scrn320			; if (AX < 0x0200) goto scrn320
 
-; 画面モード情報を得る
+; get the vbe infomation
 
 		MOV		CX,VBEMODE
 		MOV		AX,0x4f01
@@ -50,14 +49,14 @@ VRAM	EQU		0x0ff8			; グラフィックバッファの開始番地
 		JNE		scrn320
 		MOV		AX,[ES:DI+0x00]
 		AND		AX,0x0080
-		JZ		scrn320			; モード属性のbit7が0だったのであきらめる
+		JZ		scrn320
 
-; 画面モードの切り替え
+; set the vga by boost
 
 		MOV		BX,VBEMODE+0x4000
 		MOV		AX,0x4f02
 		INT		0x10
-		MOV		BYTE [VMODE],8	; 画面モードをメモする（C言語が参照する）
+		MOV		BYTE [VMODE],8
 		MOV		AX,[ES:DI+0x12]
 		MOV		[SCRNX],AX
 		MOV		AX,[ES:DI+0x14]
@@ -75,9 +74,7 @@ scrn320:
 		MOV		WORD [SCRNY],200
 		MOV		DWORD [VRAM],0x000a0000
 
-
-
-
+keystatus:
 		MOV		AH,0x02
 		INT		0x16 			; keyboard BIOS
 		MOV		[LEDS],AL

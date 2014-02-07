@@ -10,17 +10,23 @@ struct TIMERCTL timerctl;
 void init_pit(void)
 {
 int i;
+struct TIMER *t;
 io_out8(PIT_CTRL,0x34);
 io_out8(PIT_CNT0,0x9c);
 io_out8(PIT_CNT0,0x2e);
 timerctl.count =0;
 timerctl.next = 0xffffffff;
-timerctl.using = 0;
 
 for(i=0;i<MAX_TIMER;i++)
 {
 timerctl.timers0[i].flag =0; // unused 
 }
+t = timer_alloc();              //link list 
+t->timeout = 0xffffffff;
+t->flag = TIMER_FLAG_USING;
+t->next = 0;
+timerctl.t0 = t;
+timerctl.next = 0xffffffff;
 return;
 }
 
@@ -47,29 +53,31 @@ void timer_free(struct TIMER * timer)
 
 void inthandler20(int *esp)
 {
-int i;
 struct TIMER *t;
+char ts = 0;
+
 io_out8(PIC0_OCW2,0x60);
 timerctl.count++;
 if(timerctl.next > timerctl.count)
 	return;
 
-t = timerctl.timers[0]; // points to the first element
-for(i=0;i< timerctl.using ; i++)
+t = timerctl.t0; // points to the first element
+for(;;)
 {
 if(t->timeout > timerctl.count)
 	break;
 // timeout
 t->flag = TIMER_FLAG_ALLOC;
-fifo_put(t->fifo,t->data);
+if(t == mt_timer)
+	ts =1;
+else
+	fifo_put(t->fifo,t->data);
 t = t->next;
 }
-timerctl.using -=i;
-timerctl.timers[0] = t;
-if(timerctl.using > 0 )
-	timerctl.next = timerctl.timers[0]->timeout;
-else
-	timerctl.next = 0xffffffff;
+timerctl.t0 = t;
+timerctl.next = timerctl.t0->timeout;
+if(ts != 0)
+	mt_switch();
 return;
 }
 
@@ -84,21 +92,10 @@ timer->fifo = fifo;
 timer->data = data;
 e = io_load_eflags();
 io_cli();
-timerctl.using++;
-
-if(timerctl.using == 1) // only one timer is running 
-{
-timerctl.timers[0] = timer;
-timer->next = 0;
-timerctl.next = timeout;
-io_store_eflags(e);
-return;
-}
-
-t = timerctl.timers[0];
+t = timerctl.t0;
 if(timeout <= t->timeout)
 {
-timerctl.timers[0] = timer;
+timerctl.t0 = timer;
 timer->next = t;  
 timerctl.next = timeout;
 io_store_eflags(e);
@@ -107,10 +104,8 @@ return;
 
 for(;;)
 {
-	s = t;
-	t = t->next;
-	if(t == 0)
-		break;
+	s = t;  // s:p t:p+1
+ 	t = t->next;
 	if(timeout <= t->timeout)
 	{
 	s->next = timer;
@@ -120,9 +115,4 @@ for(;;)
 	}
 }
 
-
-s->next = timer;
-timer->next = 0;
-io_store_eflags(e);
-return;
 }

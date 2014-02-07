@@ -2,7 +2,15 @@
 #include <stdio.h>
 
 #define MEMMAN_ADDR 0x003c0000
-unsigned int memtest(unsigned int start, unsigned int end);
+// task status segment
+struct TSS32 {
+	int backlink, esp0, ss0, esp1, ss1, esp2, ss2, cr3;
+	int eip, eflags, eax, ecx, edx, ebx, esp, ebp, esi, edi;
+	int es, cs, ss, ds, fs, gs;
+	int ldtr, iomap;
+};
+void task_b_main(struct SHEET * sht_back);
+
 
 void HariMain(void)
 {
@@ -29,6 +37,8 @@ void HariMain(void)
 		'2', '3', '0', '.'
 	};
 
+	struct SEGMENT_DESCRIPTOR *gdt = (struct SEGMENT_DESCRIPTOR *) ADR_GDT;
+	
 	init_gdtidt();
 	init_pic();
 	io_sti();
@@ -93,14 +103,52 @@ void HariMain(void)
 	putfonts8_asc(buf_back, binfo->scrnx, 0, 32, COL8_FFFFFF, s);
 	sheet_refresh(sht_back,0,0,binfo->scrnx,48);
 
+	
 
+	
+	int cursor_x,cursor_c;  // cursor color
+	make_textbox8(sht_win, 8,28,144,16,COL8_FFFFFF); // heigth is 16
+	cursor_x = 8;
+	cursor_c = COL8_FFFFFF;
+
+	// task b stack
+	int task_b_esp;
+	task_b_esp = memman_alloc_4k(memman,64*1024) + 64 * 1024 -8;
+	struct TSS32 tss_a,tss_b;
+	tss_a.ldtr = 0;
+	tss_a.iomap = 0x40000000;
+	tss_b.ldtr = 0; // g changed to tss_b
+	tss_b.iomap = 0x40000000;
+	// task switch 
+	set_segmdesc(gdt+3,103,(int ) &tss_a, AR_TSS32);
+	set_segmdesc(gdt+4,103,(int ) &tss_b, AR_TSS32);
+	load_tr(3*8);
+	tss_b.eip = (int) &task_b_main;
+	tss_b.eflags = 0x00000202; /*IF =1*/
+	tss_b.eax = 0;
+	tss_b.ebx = 0;
+	tss_b.ecx =0;
+	tss_b.edx = 0;
+	tss_b.esp = task_b_esp;
+	tss_b.ebp = 0;
+	tss_b.esi = 0;
+	tss_b.edi = 0;
+	tss_b.es = 1*8;
+	tss_b.cs = 2*8;
+	tss_b.ss = 1*8;
+	tss_b.ds = 1*8;
+	tss_b.fs = 1*8;
+	tss_b.gs = 1*8;
+	*((int *) (task_b_esp + 4)) = (int) sht_back; // memory share
+	mt_init();
+	
 	for(;;)
 	{
 	//sprintf(s,"%010d",timerctl.count);
 	//bps(sht_win,40,28, COL8_C6C6C6,COL8_000000,s,10);
 	io_cli(); // forbid all interrupts
 	if(fifo_status(&fifo) == 0) 
-		io_sti();  // read data until it's empty
+		io_stihlt();  // read data until it's empty
 	else {
 		i=fifo_get(&fifo);
 		io_sti(); // open interrupts
@@ -111,13 +159,23 @@ void HariMain(void)
 		sheet_refresh(sht_back,0,16,16,32);
 		if(i<256 +0x54)
 			{
-			if(keytable[i-256] != 0)
+			if(keytable[i-256] != 0 && cursor_x < 144)
 				{
 					s[0]= keytable[i-256];
 					s[1]= '\0';
-					bps(sht_win,40,28, COL8_C6C6C6,COL8_000000,s,1);
+					bps(sht_win,cursor_x,28, COL8_FFFFFF,COL8_000000,s,1); // 4th parm is background color 
+					cursor_x +=8; // cursor move forward
 				}
 			}
+		if(i == 256 + 0x0e && cursor_x > 8)
+			{
+				bps(sht_win,cursor_x,28,COL8_FFFFFF,COL8_000000," ",1);
+				cursor_x -=8;
+			
+			}
+		boxfill8(sht_win ->buf, sht_win->bxsize, cursor_c,cursor_x,28,cursor_x+7,43);
+		sheet_refresh(sht_win,cursor_x,28,cursor_x+8,44);
+
 		}
 
 		else if(511 < i && i < 768)
@@ -144,7 +202,9 @@ void HariMain(void)
 			putfonts8_asc(buf_back, binfo->scrnx, 0, 0, COL8_FFFFFF, s);
 			sheet_refresh(sht_back,0,0,80,16);
 			sheet_move(sht_mouse,mx,my);
-		 
+			// move the window, vram -> sht -> move
+		 	if((mdec.btn & 0x01) != 0)
+				sheet_move(sht_win,mx-80,my-8);
 		  }
 		}
 
@@ -158,20 +218,61 @@ void HariMain(void)
 		}
 		else if(i == 1)
 			{
-				timer3->data = 0;
-				boxfill8(buf_back, binfo->scrnx, COL8_FFFFFF, 8, 96,15, 111);		
-				timer_set(timer3,50,&fifo,timer3->data); // keep the data
-				sheet_refresh(sht_back,8, 96,15, 111);
+				timer_set(timer3,50,&fifo,0);
+				boxfill8(sht_win->buf,sht_win->bxsize, COL8_000000, cursor_x, 28,cursor_x+7, 43);
+				sheet_refresh(sht_win,cursor_x,28,cursor_x + 8, 44);
 			}
 		else if(i==0)
 			{
-				timer3->data = 1;
-				boxfill8(buf_back, binfo->scrnx, COL8_008484, 8, 96,15, 111);	
-				timer_set(timer3,50,&fifo,timer3->data); // keep the data
-				sheet_refresh(sht_back,8, 96,15, 111);
+				timer_set(timer3,50,&fifo,1); // keep the data
+				boxfill8(sht_win->buf,sht_win->bxsize, COL8_FFFFFF,cursor_x, 28,cursor_x + 7, 43);
+				sheet_refresh(sht_win,cursor_x,28,cursor_x + 8, 44);
 			}
 			
 	     }
 
 	}
+}
+
+
+
+void task_b_main(struct SHEET * sht_back)
+{
+
+struct FIFO fifo;
+struct TIMER *timer,*timer_f;
+int i, fifobuf[128];
+int count=0;
+char s[12];
+fifo_init(&fifo,128,fifobuf);
+timer = timer_alloc();
+timer_set(timer,2,&fifo,2);
+timer_f = timer_alloc();
+timer_set(timer_f,1,&fifo,1);
+
+for(;;)
+{
+	count++;
+	io_cli();
+	if(fifo_status(&fifo) == 0)
+		io_sti();
+	else
+	{
+	i = fifo_get(&fifo);
+	io_sti();
+	if(i == 2)
+	{	//farjmp(0,3*8);// switch to task a ;
+		sprintf(s,"%10d",count);
+		bps(sht_back,0,160, COL8_FFFFFF,COL8_000000,s,10);
+		timer_set(timer,2,&fifo,2);
+	}
+	else if(i ==1) 
+	{
+		sprintf(s,"%10d",count);
+		bps(sht_back,0,144, COL8_FFFFFF,COL8_000000,s,10);
+		timer_set(timer_f,1,&fifo,1);
+	}
+	}
+}
+
 }
