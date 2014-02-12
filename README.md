@@ -1,4 +1,13 @@
-there is a will there will be a way . I like the 《本色》by 乐嘉.
+22 days of OSASK,which is an open self-made operating system.
 
-The code here is &copy;   
-contact me: **googcheng@gmail.com**
+1,file system  
+2,hardware control  
+3,memory managment  
+4, interrupt  
+5, timer  
+6, image and window managment  
+7, task scheduler  
+8, system protect and api  
+
+The code is partly &copy;   
+
