@@ -74,7 +74,7 @@ next:
 		CMP		CH,CYLS
 		JB		readloop		; CH < CYLS 
 		MOV		[0x0ff0],CH      ; write the number of sectors to memory
-		JMP		0xc200
+		JMP		0xc200   ; after read over, go to 0xc200 run haribote.sys
 
 fin:
 		HLT						; ‰½‚©‚ ‚é‚Ü‚ÅCPU‚ð’âŽ~‚³‚¹‚é

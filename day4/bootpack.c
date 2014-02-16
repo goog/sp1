@@ -90,12 +90,13 @@ void init_palette(void)
 }
 
 
+// video DA converter
 void set_palette(int start,int end,unsigned char * rgb)
 {
 	int i, eflags;
-	eflags = io_load_eflags() ; //record inter flags
+	eflags = io_load_eflags() ; //record interrupt flags
 	io_cli();
-	io_out8(0x03c8,start);  // the id of palette is start 
+	io_out8(0x03c8,start);  // write the id of palette
 	for(i= start;i <= end; i++)
 	{
 		io_out8(0x03c9,rgb[0]/4);
@@ -105,7 +106,7 @@ void set_palette(int start,int end,unsigned char * rgb)
 	
 	}
 
-	io_store_eflags(eflags);  /* 恢复中断许可*/
+	io_store_eflags(eflags);  // restore flags
 	return;
 
 
