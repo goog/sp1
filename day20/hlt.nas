@@ -1,5 +1,5 @@
 [BITS 32]
-	MOV AL,'A'
+	MOV AL,'A'  ;api
 	INT 0x40
 	MOV AL,'B'
 	INT 0x40

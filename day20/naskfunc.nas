@@ -214,9 +214,6 @@ _load_tr:
 	LTR [ESP+4]
 	RET
 
-_taskswitch4:
-	JMP 4*8:0
-	RET
 _taskswitch3:
 	JMP 3*8:0
 	RET
@@ -244,10 +241,10 @@ _farcall:
 	RET
 
 _asm_hrb_api:
-	STI  ; open interupt
-	PUSHAD
+	STI  ; open interrupt
+	PUSHAD ; save register values
 	PUSHAD ; pass values to hrb_api
 	CALL _hrb_api
-	ADD ESP,32
+	ADD ESP,32  ; 8*4
 	POPAD
 	IRETD

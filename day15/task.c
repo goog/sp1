@@ -15,9 +15,9 @@ void timer_settime(struct TIMER *timer, unsigned int timeout)
 	io_cli();
 	t = timerctl.t0;
 	if (timer->timeout <= t->timeout) {
-		/* �擪�ɓ������� */
+		// become first link list element
 		timerctl.t0 = timer;
-		timer->next = t; /* ��t */
+		timer->next = t;
 		timerctl.next = timer->timeout;
 		io_store_eflags(e);
 		return;
@@ -27,10 +27,10 @@ void timer_settime(struct TIMER *timer, unsigned int timeout)
 		s = t;
 		t = t->next;
 		if (timer->timeout <= t->timeout) {
-			/* s��t�̊Ԃɓ������� */
-			s->next = timer; /* s�̎���timer */
-			timer->next = t; /* timer�̎���t */
-			io_store_eflags(e);
+			// insert 
+			s->next = timer;
+			timer->next = t;
+			io_store_eflags(e);   // stop interrupts on the stage of setting timers' list
 			return;
 		}
 	}

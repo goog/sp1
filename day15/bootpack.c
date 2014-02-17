@@ -117,12 +117,12 @@ void HariMain(void)
 	struct TSS32 tss_a,tss_b;
 	tss_a.ldtr = 0;
 	tss_a.iomap = 0x40000000;
-	tss_b.ldtr = 0; // g changed to tss_b
+	tss_b.ldtr = 0;
 	tss_b.iomap = 0x40000000;
 	// task switch 
 	set_segmdesc(gdt+3,103,(int ) &tss_a, AR_TSS32);
 	set_segmdesc(gdt+4,103,(int ) &tss_b, AR_TSS32);
-	load_tr(3*8);
+	load_tr(3*8);   // set current task gdt3
 	tss_b.eip = (int) &task_b_main;
 	tss_b.eflags = 0x00000202; /*IF =1*/
 	tss_b.eax = 0;
@@ -134,7 +134,7 @@ void HariMain(void)
 	tss_b.esi = 0;
 	tss_b.edi = 0;
 	tss_b.es = 1*8;
-	tss_b.cs = 2*8;
+	tss_b.cs = 2*8;   // could change to other segment, now is same with bootpack.c
 	tss_b.ss = 1*8;
 	tss_b.ds = 1*8;
 	tss_b.fs = 1*8;
