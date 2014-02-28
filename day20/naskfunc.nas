@@ -223,7 +223,7 @@ _farjmp:
 	JMP FAR [ESP+4]
 	RET
 
-
+; generally pass parameters by stack
 _asm_cons_putchar:
 	STI  ; open interupt
 	PUSHAD

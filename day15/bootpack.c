@@ -120,16 +120,16 @@ void HariMain(void)
 	tss_b.ldtr = 0;
 	tss_b.iomap = 0x40000000;
 	// task switch 
-	set_segmdesc(gdt+3,103,(int ) &tss_a, AR_TSS32);
+	set_segmdesc(gdt+3,103,(int ) &tss_a, AR_TSS32);  // create tss segment
 	set_segmdesc(gdt+4,103,(int ) &tss_b, AR_TSS32);
 	load_tr(3*8);   // set current task gdt3
 	tss_b.eip = (int) &task_b_main;
-	tss_b.eflags = 0x00000202; /*IF =1*/
+	tss_b.eflags = 0x00000202; //IF =1
 	tss_b.eax = 0;
 	tss_b.ebx = 0;
 	tss_b.ecx =0;
 	tss_b.edx = 0;
-	tss_b.esp = task_b_esp;
+	tss_b.esp = task_b_esp; // special stack
 	tss_b.ebp = 0;
 	tss_b.esi = 0;
 	tss_b.edi = 0;
@@ -261,7 +261,7 @@ for(;;)
 	i = fifo_get(&fifo);
 	io_sti();
 	if(i == 2)
-	{	//farjmp(0,3*8);// switch to task a ;
+	{	//farjmp(0,3*8);// switch to task a ;change code selector
 		sprintf(s,"%10d",count);
 		bps(sht_back,0,160, COL8_FFFFFF,COL8_000000,s,10);
 		timer_set(timer,2,&fifo,2);

@@ -5,7 +5,6 @@
 struct TIMER *task_timer;
 struct TASKCTL *taskctl;
 
-
 void timer_settime(struct TIMER *timer, unsigned int timeout)
 {
 	int e;
@@ -17,18 +16,20 @@ void timer_settime(struct TIMER *timer, unsigned int timeout)
 	t = timerctl.t0;
 	if (timer->timeout <= t->timeout) {
 		timerctl.t0 = timer;
-		timer->next = t; /* ��t */
+		timer->next = t;
 		timerctl.next = timer->timeout;
 		io_store_eflags(e);
 		return;
 	}
 
-	for (;;) {
+	for (;;) 
+	{
 		s = t;
 		t = t->next;
-		if (timer->timeout <= t->timeout) {
-			s->next = timer; /* s�̎���timer */
-			timer->next = t; /* timer�̎���t */
+		if(timer->timeout <= t->timeout) 
+		{
+			s->next = timer;
+			timer->next = t;
 			io_store_eflags(e);
 			return;
 		}

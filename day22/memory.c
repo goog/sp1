@@ -1,19 +1,6 @@
 #include "bootpack.h"
-/*
+
 #define MEMMAN_FREES  4090
-struct FREEINFO {             // one item
-unsigned int addr,size;
-};
-
-
-struct MEMMAN {
-int frees,maxfrees,lostsize,losts;
-struct FREEINFO free[MEMMAN_FREES];
-};
-*/
-#define MEMMAN_FREES  4090
-
-
 #define EFLAGS_AC_BIT		0x00040000
 #define CR0_CACHE_DISABLE	0x60000000
 
@@ -22,12 +9,11 @@ unsigned int memtest(unsigned int start, unsigned int end)
 	char flg486 = 0;
 	unsigned int eflg, cr0, i;
 
-	/* 386���A486�ȍ~�Ȃ̂��̊m�F */
 	eflg = io_load_eflags();
 	eflg |= EFLAGS_AC_BIT; /* AC-bit = 1 */
 	io_store_eflags(eflg);
 	eflg = io_load_eflags();
-	if ((eflg & EFLAGS_AC_BIT) != 0) { /* 386�ł�AC=1�ɂ��Ă�����0�ɖ߂��Ă��܂� */
+	if ((eflg & EFLAGS_AC_BIT) != 0) {
 		flg486 = 1;
 	}
 	eflg &= ~EFLAGS_AC_BIT; /* AC-bit = 0 */
@@ -35,7 +21,7 @@ unsigned int memtest(unsigned int start, unsigned int end)
 
 	if (flg486 != 0) {
 		cr0 = load_cr0();
-		cr0 |= CR0_CACHE_DISABLE; /* �L���b�V���֎~ */
+		cr0 |= CR0_CACHE_DISABLE;
 		store_cr0(cr0);
 	}
 
@@ -43,7 +29,7 @@ unsigned int memtest(unsigned int start, unsigned int end)
 
 	if (flg486 != 0) {
 		cr0 = load_cr0();
-		cr0 &= ~CR0_CACHE_DISABLE; /* �L���b�V������ */
+		cr0 &= ~CR0_CACHE_DISABLE;
 		store_cr0(cr0);
 	}
 

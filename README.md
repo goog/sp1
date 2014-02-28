@@ -1,4 +1,4 @@
-22 days of OSASK,which is an open self-made operating system.
+22 days of OSASK,which is an open operating system written by Hidemi Kawai.
 
 1,file system  
 2,hardware control  

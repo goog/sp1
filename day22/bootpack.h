@@ -47,8 +47,7 @@ void init_screen(char *vram, int x, int y);
 void putfont8(char *vram, int xsize, int x, int y, char c, char *font);
 void putfonts8_asc(char *vram, int xsize, int x, int y, char c, unsigned char *s);
 void init_mouse_cursor8(char *mouse, char bc);
-void putblock8_8(char *vram, int vxsize, int pxsize,
-	int pysize, int px0, int py0, char *buf, int bxsize);
+void putblock8_8(char *vram, int vxsize, int pxsize,int pysize, int px0, int py0, char *buf, int bxsize);
 #define COL8_000000		0
 #define COL8_FF0000		1
 #define COL8_00FF00		2
@@ -93,7 +92,6 @@ void set_gatedesc(struct GATE_DESCRIPTOR *gd, int offset, int selector, int ar);
 
 
 /* int.c */
-
 void init_pic(void);
 void inthandler21(int *esp);
 void inthandler27(int *esp);
@@ -222,14 +220,14 @@ void make_textbox8(struct SHEET *sht, int x0, int y0, int sx, int sy, int c); //
 
 struct TSS32 {
 	int backlink, esp0, ss0, esp1, ss1, esp2, ss2, cr3;
-	int eip, eflags, eax, ecx, edx, ebx, esp, ebp, esi, edi;
+	int eip, eflags, eax, ecx, edx, ebx, esp, ebp, esi, edi; // eip:ip instruction pointer
 	int es, cs, ss, ds, fs, gs;
 	int ldtr, iomap;
 };
 
 struct TASK
 {
-	int sel,flags; // sel: gdt NO
+	int sel,flags; // sel: gdt number
 	int level,priority;
 	struct TSS32 tss;
 	struct FIFO fifo;
