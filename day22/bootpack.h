@@ -137,7 +137,7 @@ int mouse_decode(struct MOUSE_DEC *mdec,unsigned char dat);
 // memory 
 #define MEMMAN_FREES  4090
 #define MEMMAN_ADDR 0x003c0000
-struct FREEINFO {             // one item
+struct FREEINFO {
 	unsigned int addr,size;
 };
 

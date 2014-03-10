@@ -1,9 +1,9 @@
 #include "bootpack.h"
-
 #define MEMMAN_FREES  4090
 #define EFLAGS_AC_BIT		0x00040000
 #define CR0_CACHE_DISABLE	0x60000000
 
+// check out the size of free memory
 unsigned int memtest(unsigned int start, unsigned int end)
 {
 	char flg486 = 0;
@@ -55,32 +55,28 @@ unsigned int memman_total(struct MEMMAN *man )
 }
 
 
-
-
-// there is optical space 
+// there is optimized space 
 unsigned int memman_alloc(struct MEMMAN * man, unsigned int size)
 {
-
-unsigned int i,a;
-for(i=0;i<man->frees;i++)
-{
-	if( man->free[i].size  >= size)
-		{
-		a = man->free[i].addr;
-		man->free[i].addr +=size;
-		man->free[i].size -=size;
-		if(man->free[i].size == 0)
-		{
-		man->frees--;
-		for(;i<man->frees;i++)
-			man->free[i] = man->free[i+1];
-		}
-		
-		return a;
-		}
-}
-
-return 0;
+	unsigned int i,a;
+	for(i=0;i<man->frees;i++)
+	{
+		if( man->free[i].size  >= size)
+			{
+			a = man->free[i].addr;
+			man->free[i].addr +=size;
+			man->free[i].size -=size; // alloc and just change free infomation
+			if(man->free[i].size == 0)
+			{
+			man->frees--;
+			for(;i<man->frees;i++)
+				man->free[i] = man->free[i+1];
+			}
+			
+			return a;
+			}
+	}
+	return 0;
 }
 
 
@@ -122,43 +118,39 @@ if(i < man->frees)
 	return 0;
 	}
 
-
-
-if(man->frees < MEMMAN_FREES)
-{
-for(j=man->frees; j > i; j--)
-	man->free[j] = man->free[j-1];
-
-man->frees++;
-if(man->maxfrees < man->frees )
-	man->maxfrees = man->frees;
-
-man->free[i].addr =  addr;
-man->free[i].size = size ;
-
-return 0;
-
-}
-
-
-man->losts++;
-man->lostsize+= size;
-return -1 ;
+	if(man->frees < MEMMAN_FREES)
+	{
+		for(j=man->frees; j > i; j--)
+			man->free[j] = man->free[j-1];
+		
+		man->frees++;
+		if(man->maxfrees < man->frees )
+			man->maxfrees = man->frees;
+		
+		man->free[i].addr =  addr;
+		man->free[i].size = size ;
+		
+		return 0;
+		
+	}
+	man->losts++;
+	man->lostsize+= size;
+	return -1 ;
 }
 
 
 unsigned int memman_alloc_4k(struct MEMMAN * man, unsigned int size)
 {
-unsigned int a;
-size = (size + 0xfff) & 0xfffff000 ;
-a = memman_alloc(man,size);
-return a;
+	unsigned int a;
+	size = (size + 0xfff) & 0xfffff000 ;
+	a = memman_alloc(man,size);
+	return a;
 }
 
 int memman_free_4k(struct MEMMAN *man , unsigned int addr , unsigned int size)
 {
-int i;
-size = (size + 0xfff) & 0xfffff000;
-i = memman_free(man,addr,size);
-return i;
+	int i;
+	size = (size + 0xfff) & 0xfffff000;
+	i = memman_free(man,addr,size);
+	return i;
 }

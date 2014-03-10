@@ -10,7 +10,7 @@ void HariMain(void)
 	int xsize;
 	int ysize;
 	unsigned int memtotal;
-	struct MEMMAN *memman = (struct MEMMAN *) MEMMAN_ADDR ;
+	struct MEMMAN *memman = (struct MEMMAN *) MEMMAN_ADDR ;  //MEMMAN_ADDR 0x003c0000
 	struct BOOTINFO *binfo;
 	struct SHTCTL *shtctl;
 	struct CONSOLE *cons;
@@ -55,11 +55,10 @@ void HariMain(void)
 	timer = timer_alloc();
 	timer_set(timer,50,&fifo,1);
 	
-	init_keyboard(&fifo,256);	
-	// memory test
+	init_keyboard(&fifo,256);
 	memtotal = memtest(0x00400000, 0xbfffffff); // available maxmium  address
 	memman_init(memman);
-	memman_free(memman,0x00001000,0x0009e000);
+	memman_free(memman,0x00001000,0x0009e000); // free two blocks from memory layout
 	memman_free(memman,0x00400000,memtotal-0x00400000);
 		
 	init_palette();
@@ -137,10 +136,11 @@ void HariMain(void)
 
 	for(;;)
 	{
-	io_cli(); // forbid all interrupts
-	if(fifo_status(&fifo) == 0) 
-		{task_sleep(curr);
-		io_sti();
+		io_cli(); // forbid all interrupts
+		if(fifo_status(&fifo) == 0) 
+		{
+			task_sleep(curr);
+			io_sti();
 		}
 	else {
 		i=fifo_get(&fifo);
